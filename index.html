@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>testing screenshot browser</h1>
+    <p>asddddddddddddd!!!!!111</p>
+    
+<script>
+  async function captureViewportScreenshot() {
+    try {
+      // Open the screen-sharing prompt
+      const stream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: false });
+
+      // Create small timeframe to not capture the prompt
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      // Capture the screen
+      const videoTrack = stream.getVideoTracks()[0];
+      const imageCapture = new ImageCapture(videoTrack);
+      const bitmap = await imageCapture.grabFrame();
+      const canvas = document.createElement('canvas');
+      canvas.width = bitmap.width;
+      canvas.height = bitmap.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(bitmap, 0, 0);
+      const screenshot = canvas.toDataURL('image/png');
+      const image = new Image();
+      image.src = screenshot;
+      
+      // Create modal window
+      const modal = document.createElement('div');
+      modal.className = 'screenshot-modal';
+      const modalBg = document.createElement('div');
+      modalBg.className = 'screenshot-modal-bg';
+      const modalContent = document.createElement('div');
+      modalContent.className = 'screenshot-modal-content';
+      modal.appendChild(modalBg);
+      modal.appendChild(modalContent);
+      document.body.appendChild(modal);
+
+      // Add image to modal content
+      modalContent.appendChild(image);
+
+      // Create download button
+      const downloadBtn = document.createElement('a');
+      downloadBtn.className = 'screenshot-download-btn';
+      downloadBtn.href = screenshot;
+      downloadBtn.download = 'screenshot.png';
+      downloadBtn.innerHTML = 'Download';
+      modalContent.appendChild(downloadBtn);
+
+      // Close modal on click outside
+      modalBg.addEventListener('click', () => {
+        document.body.removeChild(modal);
+      });
+
+      videoTrack.stop();
+      stream.getTracks().forEach(track => track.stop());
+    } catch (error) {
+    console.log('Error capturing screenshot: ', error);
+    }
+}
+
+
+captureViewportScreenshot()
+
+    </script>
+</body>
+</html>
