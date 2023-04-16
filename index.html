@@ -12,6 +12,7 @@
     <p>asddddddddddddd!!!!!111</p>
     
   <button class="fire-fun">test for firefox</button>
+  <button class="fire-mob">test for mob</button>
 
 <script>
   async function captureViewportScreenshot() {
@@ -69,11 +70,70 @@
     }
 }
 
-
 captureViewportScreenshot()
 
+async function captureMobileScreenshot() {
+  try {
+    const constraints = {
+      video: {
+        mediaSource: 'screen',
+        width: { min: 640, ideal: 1280, max: 1920 },
+        height: { min: 480, ideal: 720, max: 1080 },
+        aspectRatio: 1.777777778,
+      },
+    };
+    const stream = await navigator.mediaDevices.getUserMedia(constraints);
+    const videoTrack = stream.getVideoTracks()[0];
+    const imageCapture = new ImageCapture(videoTrack);
+    const bitmap = await imageCapture.grabFrame();
+    const canvas = document.createElement('canvas');
+    canvas.width = bitmap.width;
+    canvas.height = bitmap.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(bitmap, 0, 0);
+    const screenshot = canvas.toDataURL('image/png');
+    const image = new Image();
+    image.src = screenshot;
+
+    // Create modal window
+    const modal = document.createElement('div');
+    modal.className = 'screenshot-modal';
+    const modalBg = document.createElement('div');
+    modalBg.className = 'screenshot-modal-bg';
+    const modalContent = document.createElement('div');
+    modalContent.className = 'screenshot-modal-content';
+    modal.appendChild(modalBg);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    // Add image to modal content
+    modalContent.appendChild(image);
+
+    // Create download button
+    const downloadBtn = document.createElement('a');
+    downloadBtn.className = 'screenshot-download-btn';
+    downloadBtn.href = screenshot;
+    downloadBtn.download = 'screenshot.png';
+    downloadBtn.innerHTML = 'Download';
+    modalContent.appendChild(downloadBtn);
+
+    // Close modal on click outside
+    modalBg.addEventListener('click', () => {
+      document.body.removeChild(modal);
+    });
+
+    videoTrack.stop();
+    stream.getTracks().forEach(track => track.stop());
+  } catch (error) {
+    console.log('Error capturing screenshot: ', error);
+  }
+}
+
 const btn = document.querySelector('.fire-fun');
-btn.addEventListener('click', captureViewportScreenshot)
+const btnMob = document.querySelector('.fire-mob');
+btn.addEventListener('click', captureViewportScreenshot);
+
+btnMob.addEventListener('click', captureMobileScreenshot);
 
     </script>
 </body>
