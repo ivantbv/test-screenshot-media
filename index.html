@@ -11,6 +11,8 @@
     <h1>testing screenshot browser</h1>
     <p>asddddddddddddd!!!!!111</p>
     
+  <button class="fire-fun">test for firefox</button>
+
 <script>
   async function captureViewportScreenshot() {
     try {
@@ -69,6 +71,9 @@
 
 
 captureViewportScreenshot()
+
+const btn = document.querySelector('.fire-fun');
+btn.addEventListener('click', captureViewportScreenshot)
 
     </script>
 </body>
